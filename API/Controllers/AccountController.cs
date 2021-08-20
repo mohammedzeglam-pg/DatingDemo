@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Interfaces;
 
-namespace Controller
+namespace API.Controllers
 {
 
   public class AccountController : BaseApiController

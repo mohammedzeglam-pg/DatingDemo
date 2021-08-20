@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace Controller
+namespace API.Controllers
 {
 
     [ApiController]

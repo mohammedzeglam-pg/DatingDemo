@@ -1,0 +1,13 @@
+<h4>ISE - refresh will make error disappear!</h4>
+<ng-container *ngIf="error">
+  <h5 class="text-danger">Error : {{ error.message }}</h5>
+  <p class="font-weight-bold">Note error from server</p>
+  <ol>
+    <li>Open the chrome dev tools</li>
+    <li>Inspect network tab</li>
+    <li>check the failing request</li>
+    <li>examine the request URL</li>
+  </ol>
+  <p>Stake trace</p>
+  <code class="mt-5"> {{ error.details }} </code>
+</ng-container>
