@@ -10,8 +10,8 @@ namespace API.Data
 {
   public class Seed
   {
-    public static async Task SeedUsers(DataContext context){
-      if(await context.Users.AnyAsync()) return ;
+  public static async Task SeedUsers(DataContext context){
+if(await context.Users.AnyAsync()) return ;
       var userData = await System.IO.File.ReadAllBytesAsync("Data/UserSeedData.json");
       var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
       foreach(var user in users){

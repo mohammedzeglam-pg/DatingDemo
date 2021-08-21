@@ -18,28 +18,27 @@ namespace API.Controllers
     [HttpGet("auth")]
     public ActionResult<string> GetSecret()
     {
-      return "secret key"; 
+      return "secret key";
     }
 
     [HttpGet("not-found")]
     public ActionResult<AppUser> GetNotFound()
     {
-      var thing = _context.Users.Find(-1);
-      if(thing == null) return NotFound();
-
-      return Ok(thing);
+      AppUser thing = _context.Users.Find(-1);
+      return thing != null ? Ok(thing) : NotFound();
     }
 
     [HttpGet("server-error")]
     public ActionResult<string> GetServerError()
     {
-      var thing = _context.Users.Find(-1);
-      var thingToReturn = thing.ToString();
+      AppUser thing = _context.Users.Find(-1);
+      string thingToReturn = thing.ToString();
       return thingToReturn;
     }
 
     [HttpGet("bad-request")]
-    public ActionResult<string> GetBadRequest(){
+    public ActionResult<string> GetBadRequest()
+    {
       return BadRequest("this is not ok request");
     }
   }
