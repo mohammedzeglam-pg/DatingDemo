@@ -14,20 +14,19 @@ export class AccountService {
   login(model: any) {
     return this.http.post<User>('/api/account/login', model).pipe(
       map((response: User) => {
-        localStorage.setItem('user', JSON.stringify(response));
-        this.currentUserSource.next(response);
+        this.setCurrentUser(response);
       })
     );
   }
   register(model: any) {
     return this.http.post<User>('/api/account/register', model).pipe(
       map((response: User) => {
-        localStorage.setItem('user', JSON.stringify(response));
-        this.currentUserSource.next(response);
+        this.setCurrentUser(response);
       })
     );
   }
   setCurrentUser(user: User) {
+    localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource.next(user);
   }
   logout(): void {

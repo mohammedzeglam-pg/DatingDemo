@@ -1,0 +1,40 @@
+<div class="form-group">
+  <input
+    [type]="type"
+    class="form-control"
+    [formControl]="control"
+    [placeholder]="label"
+    [ngClass]="{
+      'is-invalid': ngControl.invalid && ngControl.touched
+    }"
+  />
+  <div
+    *ngIf="control.errors?.required && control.touched"
+    class="invalid-fedback"
+  >
+    please enter a {{ label }}
+  </div>
+
+  <div
+    *ngIf="control.errors?.minlength && control.touched"
+    class="invalid-fedback"
+  >
+    {{ label }} must be at least
+    {{ control.errors.minlength["requiredLength"] }}
+  </div>
+
+  <div
+    *ngIf="control.errors?.maxlength && control.touched"
+    class="invalid-fedback"
+  >
+    {{ label }} must be at most
+    {{ control.errors.maxlength["requiredLength"] }}
+  </div>
+
+  <div
+    *ngIf="control.errors?.isMatching && control.touched"
+    class="invalid-fedback"
+  >
+    Password not matching
+  </div>
+</div>

@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using API.DTO;
 using API.Entities;
 
-namespace API.Interfaces{
+namespace API.Interfaces
+
+{
 
   public interface IUserRepository
   {
