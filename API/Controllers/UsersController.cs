@@ -1,9 +1,9 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.DTO;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using CloudinaryDotNet.Actions;
@@ -35,9 +35,16 @@ namespace API.Controllers
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
     {
-      return base.Ok(await _userRepository.GetMembersAsync());
+      AppUser user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+      if (string.IsNullOrEmpty(userParams.Gender))
+      {
+        userParams.Gender = user.Gender == "male" ? "female" : "male";
+      }
+      PagedList<MemberDto> users = await _userRepository.GetMembersAsync(userParams);
+      Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
+      return Ok(users);
     }
 
 

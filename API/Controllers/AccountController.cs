@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -38,7 +39,7 @@ namespace API.Controllers
 
       AppUser user = _mapper.Map<AppUser>(registerDto);
       using HMAC hmac = new HMACSHA512();
-      user.UserName = registerDto.Username.ToLower();
+      user.UserName = registerDto.Username.ToLower(CultureInfo.CurrentCulture);
       user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
       user.PasswordSalt = hmac.Key;
 
@@ -50,7 +51,9 @@ namespace API.Controllers
       {
         Username = user.UserName,
         Token = _tokenService.CreateToken(user),
-        KnownAs = user.KnownAs
+        KnownAs = user.KnownAs,
+
+        Gender = user.Gender
       };
     }
 
@@ -79,7 +82,8 @@ namespace API.Controllers
           Username = user.UserName,
           Token = _tokenService.CreateToken(user),
           PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-          KnownAs = user.KnownAs
+          KnownAs = user.KnownAs,
+          Gender = user.Gender
         };
       }
 
@@ -89,8 +93,7 @@ namespace API.Controllers
 
     private async Task<bool> UserExists(string username)
     {
-      return await _context.Users.AnyAsync(user => user.UserName
-                                                   == username.ToLower());
+      return await _context.Users.AnyAsync(user => user.UserName == username.ToLower(CultureInfo.CurrentCulture));
     }
   }
 
