@@ -81,6 +81,14 @@ export class MembersService {
     return this.http.delete('/api/users/delete-photo/' + photoId);
   }
 
+  addLike(username: string) {
+    return this.http.post('/api/likes/' + username, {});
+  }
+  getLikes(predicate: string, pageNumber: number, pageSize: number) {
+    let params = this.getPaginationHeader(pageNumber, pageSize);
+    params = params.append('predicate', predicate);
+    return this.getPaginatedResult<Partial<Member[]>>('/api/likes', params);
+  }
   private getPaginatedResult<T>(url: string, params: HttpParams) {
     const paginatedResult = new PaginatedResult<T>();
     return this.http.get<T>(url, { observe: 'response', params: params }).pipe(
