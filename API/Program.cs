@@ -34,6 +34,11 @@ namespace API
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
       return Host.CreateDefaultBuilder(args)
+        .ConfigureLogging(logging =>
+            {
+              _ = logging.ClearProviders();
+              _ = logging.AddConsole();
+            })
         .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
     }
   }
