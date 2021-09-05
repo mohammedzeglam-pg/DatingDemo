@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using API.Data;
+using API.Entities;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,8 +22,9 @@ namespace API
       try
       {
         DataContext context = services.GetRequiredService<DataContext>();
-        await context.Database.MigrateAsync();
-        await Seed.SeedUsers(context);
+        UserManager<AppUser> userManager = services.GetRequiredService<UserManager<AppUser>>();
+        RoleManager<AppRole> roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+        await Task.WhenAll(context.Database.MigrateAsync(), Seed.SeedUsers(userManager, roleManager));
       }
       catch (Exception ex)
       {
@@ -38,6 +41,8 @@ namespace API
             {
               _ = logging.ClearProviders();
               _ = logging.AddConsole();
+              _ = logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
+              _ = logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
             })
         .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
     }

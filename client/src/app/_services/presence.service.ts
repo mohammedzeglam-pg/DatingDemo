@@ -1,0 +1,62 @@
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  LogLevel,
+} from '@microsoft/signalr';
+import { ToastrService } from 'ngx-toastr';
+import { BehaviorSubject } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { User } from '../_models/user';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class PresenceService {
+  private hubConnection: HubConnection;
+  private onlineUsersSource = new BehaviorSubject<string[]>([]);
+  onlineUsers$ = this.onlineUsersSource.asObservable();
+  constructor(private toastr: ToastrService, private router: Router) {}
+
+  createHubConnection(user: User) {
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl('/hubs/presence/', {
+        accessTokenFactory: () => user.token,
+      })
+      .configureLogging(LogLevel.Debug)
+      .withAutomaticReconnect()
+      .build();
+    this.hubConnection.start().catch((err) => console.log(err));
+    this.hubConnection.on('UserIsOnline', (username) => {
+      this.onlineUsers$.pipe(take(1)).subscribe((usernames) => {
+        this.onlineUsersSource.next([...usernames, username]);
+      });
+    });
+
+    this.hubConnection.on('UserIsOffline', (username) => {
+      this.onlineUsers$.pipe(take(1)).subscribe((usernames) => {
+        this.onlineUsersSource.next([
+          ...usernames.filter((u) => u !== username),
+        ]);
+      });
+    });
+    this.hubConnection.on('GetOnlineUsers', (usernames: string[]) => {
+      this.onlineUsersSource.next(usernames);
+    });
+
+    this.hubConnection.on('NewMessageReceived', ({ username, knownAs }) => {
+      console.log(username);
+      this.toastr
+        .info(knownAs + ' has sent you a new message')
+        .onTap.pipe(take(1))
+        .subscribe(() =>
+          this.router.navigateByUrl(`/members/${username}?tab=3`)
+        );
+    });
+  }
+
+  stopHubConnection() {
+    this.hubConnection.stop().catch((err) => console.log(err));
+  }
+}

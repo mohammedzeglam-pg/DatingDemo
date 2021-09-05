@@ -1,6 +1,7 @@
 {
-  "/api": {
-    "target": "https://localhost:5001/",
-    "secure": false
-  }
+  "context": ["/api", "/hubs"],
+  "target": "https://localhost:5001/",
+  "secure": false,
+  "ws": true,
+  "logLevel": "debug"
 }

@@ -1,5 +1,7 @@
 using API.Extensions;
 using API.Middleware;
+using API.SignalR;
+using API.SingalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +32,7 @@ namespace API
           c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
         });
       _ = services.AddIdentityServices(_config);
+      _ = services.AddSignalR();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,13 +48,16 @@ namespace API
       _ = app.UseHttpsRedirection();
 
       _ = app.UseRouting();
-      _ = app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
+      _ = app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://localhost:4200"));
       _ = app.UseAuthentication();
       _ = app.UseAuthorization();
 
       _ = app.UseEndpoints(endpoints =>
-         endpoints.MapControllers()
-       );
+      {
+        _ = endpoints.MapControllers();
+        _ = endpoints.MapHub<PresenceHub>("/hubs/presence");
+        _ = endpoints.MapHub<MessageHub>("/hubs/message");
+      });
 
     }
   }

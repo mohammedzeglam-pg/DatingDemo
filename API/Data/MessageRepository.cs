@@ -76,7 +76,7 @@ namespace API.Data
       {
         foreach (Message message in unreadMessages)
         {
-          message.DateRead = DateTime.Now;
+          message.DateRead = DateTime.UtcNow;
         }
         _ = await _context.SaveChangesAsync();
       }
@@ -86,6 +86,34 @@ namespace API.Data
     public async Task<bool> SaveAllAsync()
     {
       return await _context.SaveChangesAsync() > 0;
+    }
+
+    public void AddGroup(Group group)
+    {
+      _ = _context.Groups.Add(group);
+    }
+
+    public async Task<Connection> GetConnection(string connectionId)
+    {
+      return await _context.Connections.FindAsync(connectionId);
+    }
+
+    public async Task<Group> GetMessageGroup(string groupName)
+    {
+      return await _context.Groups.Include(g => g.Connections).FirstOrDefaultAsync(g => g.Name == groupName);
+    }
+
+    public void RemoveConnection(Connection connection)
+    {
+      _ = _context.Connections.Remove(connection);
+    }
+
+    public async Task<Group> GetGroupForConnection(string connectionId)
+    {
+      return await _context.Groups
+        .Include(g => g.Connections)
+        .Where(g => g.Connections.Any(c => c.ConnectionId == connectionId))
+        .FirstOrDefaultAsync();
     }
   }
 }
